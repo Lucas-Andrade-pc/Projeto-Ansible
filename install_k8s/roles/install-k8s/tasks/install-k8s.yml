@@ -1,0 +1,33 @@
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+
+- name: Adicionando as chaves do repo apt do k8s
+  apt_key: 
+    url: https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key
+    state: present
+
+- name: Adding apt repository for Kubernetes
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+- name: install packages kubeadm kubelet e kubectl
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - kubelet
+      - kubeadm
+      - kubectl

@@ -1,0 +1,73 @@
+- name: Criando o Security Group
+  ec2_group: # Gerenciamento da nossa vpc
+    name: "{{ security_name }}"
+    description: sg with rule descriptions
+    profile: "{{ aws_profile }}"
+    region: "{{ region }}"
+    rules:
+    - proto: tcp
+      from_port: 22
+      to_port: 22
+      cidr_ip: 0.0.0.0/0
+      rule_desc: SSH
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+  register: basic_firewall
+
+# - name: Criando instancia EC2
+#   local_action: ec2 # mesma coisa de passar o module: ec2
+#   group: "{{ security_name }}"
+#   instances_type: "{{ instance_type }}"
+#   image: "{{ image }}"
+#   profile: "{{ aws_profile }}"
+#   wait: yes
+#   region: "{{ region }}"
+#   keypair: "{{ keypair }}"
+#   count: "{{ count }}"
+#   register: ec2
+# - name: Adicionando a instancia ao inventario temporario
+#   add_host: name={{ item.public_ip }} groups=group_temp
+#   with_items: "{{ ec2.instances }}"
+
+
+# - name: Adicionando o ip public da instancia criada ao arquivo hosts
+#   local_action: lineinfile
+#   dest: "./hosts"
+#   regexp: "{{ item.public_ip }}"
+#   insertafter: "[kubernetes]" 
+#   line: "{{ item.public_ip }"
+#   with_items: "{{ ec2.instances }}" 
+
+# - name: Adicionando o ip privado da instancia ao arquivo hosts
+#   local_action: lineifile
+#   dest: "./hosts"
+#   regexp: "{{ item.private_ip }}"
+#   insertafter: "[kubernetes]" 
+#   line: "{{ item.private_ip }}"
+#   with_items: "{{ ec2.instances }}"
+
+# - name: Esperando ssh
+#   local_action: wait_for
+#   host: "{{ item.public_ip }}"
+#   port: 22
+#   state: started
+#   with_items: "{{ ec2.instances }}"
+
+# - name: Add tag instances
+#   local_action: ec2_tag 
+#   resource: "{{ item.id }}" 
+#   region: "{{ region }" 
+#   profile: "{{ aws_profile }}" 
+#   state: present 
+#   with_item: "{{ ec2.instances }}"
+#   args:
+#     tags:
+#       Name: ansible-{{ item.ami_launch_index|int + 1 }}
+
+
+      
+      
+      
+
+

@@ -1,0 +1,3 @@
+---
+# tasks file for create-instances
+- include_tasks: provisioning_instances.yml

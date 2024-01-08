@@ -1,0 +1,9 @@
+---
+# vars file for create-instances
+instance_type: t2.medium
+security_name: SSHAccess
+image: ami-0c7217cdde317cfec
+count: 3
+region: us-east-1
+aws_profile: main
+keypair: ansible
