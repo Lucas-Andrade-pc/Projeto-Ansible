@@ -1,3 +1,5 @@
 - hosts: local
+  collections:
+    - community.aws
   roles:
   - create-instances

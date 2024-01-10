@@ -1,2 +1,4 @@
 ---
 # vars file for create-cluster
+default_url_k8s_weavenet: https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+
