@@ -2,22 +2,35 @@
   command: 
     kubeadm reset --force
   register: kubeadm_reset
+# - name: Removendo file de config containerd
+#   file:
+#     path: /etc/containerd/config.toml
+#     state: absent
+
+# - name: Restartando servico containerd
+#   service:
+#     name: containerd
+#     state: restarted
 
 - name: Iniciando o cluster k8s 
   command:
-    kubeadm init
+    kubeadm init 
   register: kubeadm_init
 
 - name: Criando o diretorio .kube
   file: 
-    path: /home/ubuntu/.kube
+    path: /home/{{ user_server }}/.kube
     state: directory
+
+- name: Alterando user:goup ao diretorio .kube/config
+  command: 
+    chown {{ user_server }}:{{ user_server }} /home/{{ user_server }}/.kube/config
 
 - name: Linkando o arquivo admin.conf para o .kube/config
   file:
     src: /etc/kubernetes/admin.conf
     dest: /home/ubuntu/.kube/config
-  state: link
+    state: link
 
 - name: Configurando o pod network Waevenet
   shell: kubectl apply -f {{ default_url_k8s_weavenet }}
