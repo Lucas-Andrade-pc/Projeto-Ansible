@@ -1,0 +1,18 @@
+- name: teste command
+  shell:
+    'curl {{ helm_url }}'
+- name: install apt-transport-https
+  apt:
+    name: apt-transport-https
+    state: present
+    
+- name: add repository
+  shell: 
+    'echo "{{ repository }}"'
+
+- name: apt update
+  apt:
+    name: helm
+    state: present
+    update_cache: yes
+  register: install_helm
