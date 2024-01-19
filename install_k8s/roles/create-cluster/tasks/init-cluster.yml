@@ -12,29 +12,41 @@
 #     name: containerd
 #     state: restarted
 
-- name: Iniciando o cluster k8s 
-  command:
-    kubeadm init 
-  register: kubeadm_init
-
 - name: Criando o diretorio .kube
   file: 
     path: /home/{{ user_server }}/.kube
     state: directory
 
+- name: Iniciando o cluster k8s 
+  command:
+    kubeadm init --pod-network-cidr=10.244.0.0/16
+  register: kubeadm_init
+
+- name: Criando diretorio .kube
+  file:
+    path: /home/{{ user_server }}/.kube
+    state: directory
+    mode: 0755
+    owner: "{{ user_server }}"
+- name: copies admin.conf to user's kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/{{ user_server }}/.kube/config
+    remote_src: yes
+
 - name: Alterando user:goup ao diretorio .kube/config
   command: 
     chown {{ user_server }}:{{ user_server }} /home/{{ user_server }}/.kube/config
 
-- name: Linkando o arquivo admin.conf para o .kube/config
-  file:
-    src: /etc/kubernetes/admin.conf
-    dest: /home/ubuntu/.kube/config
-    state: link
+# - name: Linkando o arquivo admin.conf para o .kube/config
+#   file:
+#     src: /etc/kubernetes/admin.conf
+#     dest: /home/ubuntu/.kube/config
+#     state: link
 
-- name: Configurando o pod network Waevenet
-  shell: kubectl apply -f {{ default_url_k8s_weavenet }}
-  register: waevenet_result
+# - name: Configurando o pod network Waevenet
+#   shell: kubectl apply -f {{ default_url_k8s_weavenet }}
+#   register: waevenet_result
 
 - name: Pegando token para adicionar os workers no cluster
   shell: kubeadm token list | cut -d '' -f1 | sed -n '2p'
