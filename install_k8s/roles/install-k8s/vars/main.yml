@@ -1,2 +1,3 @@
 ---
 # vars file for install-k8s
+user: linux

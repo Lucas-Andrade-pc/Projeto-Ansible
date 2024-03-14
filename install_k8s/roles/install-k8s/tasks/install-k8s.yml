@@ -2,7 +2,7 @@
   apt:
     name: "{{ packages }}"
     state: present
-    update_cache: yes
+    # update_cache: yes
   vars:
     packages:
     - apt-transport-https
@@ -25,16 +25,16 @@
   apt: 
     name: "{{ packages }}"
     state: present
-    update_cache: yes
+    # update_cache: yes
   vars:
     packages:
     - docker-ce 
     - docker-ce-cli 
     - containerd.io
-# - name: Add vagrant user to docker group
-#   user:
-#     name: {{ user_ }}
-#     group: docker
+- name: Add vagrant user to docker group
+  user:
+    name: "{{ user }}"
+    group: docker
 - name: Create containerd config file
   file:
     path: "/etc/modules-load.d/containerd.conf"
@@ -81,9 +81,18 @@
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
     state: present
 
+- name: Create directory keyrings
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: 0755
+- name: Download the public signing key for the Kubernetes
+  shell: |
+          curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
 - name: Adding apt repository for Kubernetes
   apt_repository:
-    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    repo: 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' 
     state: present
     filename: kubernetes.list
 
@@ -91,9 +100,12 @@
   apt:
     name: "{{ packages }}"
     state: present
-    update_cache: yes
+    # update_cache: yes
   vars:
     packages:
       - kubelet
       - kubeadm
       - kubectl
+
+# - name: apt hold
+#   shell: apt-mark hold kubelet kubeadm kubectl

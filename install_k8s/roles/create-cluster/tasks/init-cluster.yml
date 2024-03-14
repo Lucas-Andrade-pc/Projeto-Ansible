@@ -49,7 +49,7 @@
 #   register: waevenet_result
 
 - name: Pegando token para adicionar os workers no cluster
-  shell: kubeadm token list | cut -d '' -f1 | sed -n '2p'
+  shell: kubeadm token list | awk '{print $1}' | tail -n 1
   register: token_k8s
 
 - name: CA Hash

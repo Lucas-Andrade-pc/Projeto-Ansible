@@ -6,11 +6,37 @@
   debug:
     msg: "[WORKER] K8S_TOKEN_HOLDER - O hash {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
 
+- name: Stop containerd
+  service: 
+    name: containerd.service
+    state: stopped
+
+- name: Copy config.toml 
+  copy: 
+    src: /home/linux/projeto-k8s/config/config.toml
+    dest: /etc/containerd/config.toml
+    mode: 0644
+
+- name: daemon-reload
+  shell: systemctl daemon-reload
+
+- name: remove docker
+  apt:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages: 
+    - docker
+    - docker-cli
+
 - name: Removendo cluster
   command:
     kubeadm reset --force
   register: kubeadm_reset
-
+- name: start containerd
+  service:
+    name: containerd.service
+    state: started
 - name: Adicionando o worker ao cluster k8s
   shell: 
     kubeadm join --token={{ hostvars['K8S_TOKEN_HOLDER']['token'] }} 

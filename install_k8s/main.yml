@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: k8s-workers
   become: yes
   gather_facts: no
   pre_tasks:
@@ -11,6 +11,11 @@
   become: yes
   roles: 
   - { role: create-cluster, tags: ["Create_cluster_roles"] }
+  
+- hosts: k8s-master
+  become: yes
+  roles:
+  - { role: add_vm, tags: ["Add_vm_cluster"]}
 
 - hosts: k8s-workers
   become: yes

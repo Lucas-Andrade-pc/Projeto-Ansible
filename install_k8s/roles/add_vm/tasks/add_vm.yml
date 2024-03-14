@@ -1,0 +1,21 @@
+- name: Generate HASH
+  shell: openssl x509 -pubkey -in  /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: k8s_master_ca_hash
+
+- name: Create Token
+  shell: kubeadm token create
+  register: gen_token
+
+- name: Add token and hash repository temp
+  add_host:
+    name: "K8S_TOKEN_HOLDER"
+    token: "{{ gen_token.stdout }}"
+    hash: "{{ k8s_master_ca_hash.stdout }}"
+
+- name: Print token
+  debug:
+    msg: "{{ gen_token.stdout }}"
+
+- name: Print HASH
+  debug:
+    msg: "{{ k8s_master_ca_hash.stdout }}"

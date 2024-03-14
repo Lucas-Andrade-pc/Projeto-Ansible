@@ -1,0 +1,3 @@
+---
+# tasks file for add_vm
+- include_tasks: add_vm.yml
